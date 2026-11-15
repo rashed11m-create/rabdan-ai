@@ -1,110 +1,3 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#080d18">
-<title>RABDAN AI 🇦🇪</title>
-
-<style>
-*{box-sizing:border-box}
-body{
- margin:0;background:#080d18;color:#f4f7ff;
- font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
- min-height:100vh;display:flex;flex-direction:column
-}
-header{
- padding:18px 20px;border-bottom:1px solid #202b40;
- display:flex;align-items:center;justify-content:space-between;
- background:#0c1423
-}
-.logo{font-size:21px;font-weight:800;letter-spacing:1px}
-.logo span{color:#36d6a5}
-.status{font-size:12px;color:#aab8ce}
-main{
- width:100%;max-width:850px;margin:auto;padding:20px;
- display:flex;flex-direction:column;flex:1
-}
-.welcome{text-align:center;margin:35px 0 22px}
-.flag{font-size:38px}
-h1{font-size:29px;margin:10px 0}
-.welcome p{color:#9baac1;font-size:14px}
-#setup{
- background:#101c2e;border:1px solid #263955;
- border-radius:16px;padding:18px;text-align:center;margin-bottom:18px
-}
-button{
- border:0;border-radius:12px;padding:13px 18px;
- background:#36d6a5;color:#06130f;font-weight:800;
- font-size:15px;cursor:pointer
-}
-button:disabled{opacity:.45;cursor:not-allowed}
-#progress{color:#aab8ce;font-size:13px;margin-top:12px}
-#chat{
- display:flex;flex-direction:column;gap:13px;
- padding:8px 0 20px;flex:1
-}
-.msg{
- max-width:90%;padding:13px 15px;border-radius:15px;
- line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere
-}
-.user{align-self:flex-start;background:#173c43}
-.assistant{align-self:flex-end;background:#142238;border:1px solid #263955}
-.label{font-size:11px;color:#8da5c4;margin-bottom:5px}
-#composer{
- display:flex;gap:9px;padding:12px 0;
- position:sticky;bottom:0;background:#080d18
-}
-#input{
- flex:1;min-width:0;background:#101c2e;color:white;
- border:1px solid #263955;border-radius:13px;
- padding:14px;font-size:16px;outline:none
-}
-#input:focus{border-color:#36d6a5}
-#send{min-width:65px}
-#send.en{font-size:13px}
-#note{text-align:center;color:#687b98;font-size:11px;padding-bottom:12px}
-#clear{
- background:transparent;color:#9baac1;border:1px solid #263955;
- padding:8px 12px;font-size:12px
-}
-</style>
-</head>
-
-<body>
-<header>
- <div class="logo">RABDAN <span>AI</span> 🇦🇪</div>
- <div class="status" id="status">غير جاهز</div>
-</header>
-
-<main>
- <section class="welcome">
-  <div class="flag">🇦🇪</div>
-  <h1>مرحبا بك في ربدان</h1>
-  <p>مساعدك الذكي بطابع إماراتي</p>
- </section>
-
- <section id="setup">
-  <div>لتشغيل ربدان، حمّل نموذج الذكاء الاصطناعي أول مرة.</div>
-  <br>
-  <button id="start">تشغيل ربدان</button>
-  <div id="progress">النموذج يعمل محلياً على جهازك.</div>
- </section>
-
- <div id="chat"></div>
-
- <div id="composer">
-  <input id="input" placeholder="اكتب رسالتك لربدان..." disabled>
-  <button id="send" disabled>إرسال</button>
- </div>
-
- <div style="text-align:center">
-  <button id="clear">مسح المحادثة</button>
- </div>
-</main>
-
-<div id="note">RABDAN AI • يعمل على جهازك بعد تحميل النموذج</div>
-
 <script type="module">
 const MODEL = "Qwen3-0.6B-q4f16_1-MLC";
 
@@ -121,30 +14,24 @@ let busy = false;
 
 const systemPrompt = `
 أنت ربدان، مساعد ذكاء اصطناعي إماراتي.
-تحدث باللهجة الإماراتية بطريقة طبيعية وواضحة.
-إذا المستخدم كتب بالإنجليزية، أجب بالإنجليزية.
-كن ودوداً ومحترماً ومختصراً عندما يكون السؤال بسيطاً.
-لا تدّع أنك إنسان أو أنك تملك معلومات مباشرة عن العالم.
-إذا لم تعرف الإجابة، قل ذلك بوضوح ولا تخترع معلومات.
-ساعد المستخدم في الدراسة والكتابة والحساب والبرمجة والأسئلة العامة.
+تحدث باللهجة الإماراتية الطبيعية والواضحة.
+إذا كتب المستخدم بالإنجليزية فأجب بالإنجليزية.
+كن ودوداً ومحترماً ومختصراً عند الأسئلة البسيطة.
+لا تدّع أنك إنسان أو أنك تعرف معلومات مباشرة عن العالم.
+إذا لم تعرف الإجابة فقل ذلك بوضوح ولا تخترع معلومات.
 اسمك ربدان AI.
 `;
 
-let messages = [
- {role:"system",content:systemPrompt}
-];
+let messages = [{role:"system",content:systemPrompt}];
 
 function addMessage(role,text){
  const box=document.createElement("div");
  box.className="msg "+role;
-
  const label=document.createElement("div");
  label.className="label";
  label.textContent=role==="user"?"أنت":"ربدان AI";
-
  const body=document.createElement("div");
  body.textContent=text;
-
  box.append(label,body);
  chat.appendChild(box);
  chat.scrollTop=chat.scrollHeight;
@@ -152,9 +39,7 @@ function addMessage(role,text){
 }
 
 function saveChat(){
- try{
-  localStorage.setItem("rabdan_chat",JSON.stringify(messages.slice(1)));
- }catch(e){}
+ try{localStorage.setItem("rabdan_chat",JSON.stringify(messages.slice(1)))}catch(e){}
 }
 
 function loadChat(){
@@ -170,23 +55,23 @@ function loadChat(){
 }
 
 startBtn.addEventListener("click",async()=>{
- if(engine)return;
-
+ if(engine||busy)return;
  startBtn.disabled=true;
  status.textContent="جاري التحميل...";
- progress.textContent="جاري تجهيز محرك الذكاء الاصطناعي...";
+ progress.textContent="جاري الاتصال بمحرك WebLLM...";
 
  try{
-  if(!navigator.gpu){
-   throw new Error("متصفحك لا يدعم WebGPU.");
-  }
-
-  const gpuAdapter=await navigator.gpu.requestAdapter();
-  if(!gpuAdapter){
-   throw new Error("تعذر الوصول إلى معالج WebGPU.");
-  }
+  if(!navigator.gpu)throw new Error("WebGPU غير مدعوم في هذا المتصفح.");
 
   const webllm=await import("https://esm.run/@mlc-ai/web-llm");
+
+  const modelExists=webllm.prebuiltAppConfig.model_list.some(
+   item=>item.model_id===MODEL
+  );
+
+  if(!modelExists){
+   throw new Error("الموديل غير موجود في قائمة WebLLM الحالية: "+MODEL);
+  }
 
   engine=await webllm.CreateMLCEngine(MODEL,{
    initProgressCallback:(report)=>{
@@ -194,7 +79,7 @@ startBtn.addEventListener("click",async()=>{
    }
   });
 
-  status.textContent="متصل وجاهز";
+  status.textContent="جاهز";
   progress.textContent="تم تشغيل ربدان بنجاح 🇦🇪";
   setup.style.borderColor="#36d6a5";
   startBtn.textContent="تم التشغيل";
@@ -221,22 +106,19 @@ async function sendMessage(){
 
  addMessage("user",text);
  messages.push({role:"user",content:text});
-
  const answerBox=addMessage("assistant","جاري التفكير...");
 
  try{
   const result=await engine.chat.completions.create({
-   messages:messages,
+   messages,
    temperature:0.7,
-   max_tokens:500,
-   extra_body:{enable_thinking:false}
+   max_tokens:500
   });
 
   const answer=result.choices?.[0]?.message?.content||"ما قدرت أطلع إجابة.";
   answerBox.textContent=answer;
   messages.push({role:"assistant",content:answer});
   saveChat();
-
  }catch(error){
   answerBox.textContent="صار خطأ: "+(error.message||String(error));
  }
@@ -248,10 +130,7 @@ async function sendMessage(){
 }
 
 sendBtn.addEventListener("click",sendMessage);
-
-input.addEventListener("keydown",e=>{
- if(e.key==="Enter")sendMessage();
-});
+input.addEventListener("keydown",e=>{if(e.key==="Enter")sendMessage()});
 
 document.getElementById("clear").addEventListener("click",()=>{
  messages=[{role:"system",content:systemPrompt}];
@@ -261,5 +140,3 @@ document.getElementById("clear").addEventListener("click",()=>{
 
 loadChat();
 </script>
-</body>
-</html>
