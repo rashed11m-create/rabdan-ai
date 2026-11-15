@@ -2,197 +2,183 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#080d18">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101827">
 <title>RABDAN AI 🇦🇪</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#080d18;color:#f4f7ff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh;display:flex;flex-direction:column}
-header{padding:18px 20px;border-bottom:1px solid #202b40;display:flex;align-items:center;justify-content:space-between;background:#0c1423}
-.logo{font-size:21px;font-weight:800;letter-spacing:1px}
-.logo span{color:#36d6a5}
-.status{font-size:12px;color:#aab8ce}
-main{width:100%;max-width:850px;margin:auto;padding:20px;display:flex;flex-direction:column;flex:1}
-.welcome{text-align:center;margin:35px 0 22px}
-.flag{font-size:38px}
-h1{font-size:29px;margin:10px 0}
-.welcome p{color:#9baac1;font-size:14px}
-#setup{background:#101c2e;border:1px solid #263955;border-radius:16px;padding:18px;text-align:center;margin-bottom:18px}
-button{border:0;border-radius:12px;padding:13px 18px;background:#36d6a5;color:#06130f;font-weight:800;font-size:15px;cursor:pointer}
-button:disabled{opacity:.45;cursor:not-allowed}
-#progress{color:#aab8ce;font-size:13px;margin-top:12px;overflow-wrap:anywhere}
-#chat{display:flex;flex-direction:column;gap:13px;padding:8px 0 20px;flex:1}
-.msg{max-width:90%;padding:13px 15px;border-radius:15px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
-.user{align-self:flex-start;background:#173c43}
-.assistant{align-self:flex-end;background:#142238;border:1px solid #263955}
-.label{font-size:11px;color:#8da5c4;margin-bottom:5px}
-#composer{display:flex;gap:9px;padding:12px 0;position:sticky;bottom:0;background:#080d18}
-#input{flex:1;min-width:0;background:#101c2e;color:white;border:1px solid #263955;border-radius:13px;padding:14px;font-size:16px;outline:none}
-#input:focus{border-color:#36d6a5}
-#send{min-width:65px}
-#clear{background:transparent;color:#9baac1;border:1px solid #263955;padding:8px 12px;font-size:12px}
-#note{text-align:center;color:#687b98;font-size:11px;padding:12px}
+body{margin:0;background:#101827;color:#f4f6fa;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{padding:22px 18px;text-align:center;border-bottom:1px solid #29364a}
+h1{margin:0;font-size:27px;letter-spacing:1px}
+header p{color:#aab6c8;margin:8px 0 0;font-size:14px}
+main{max-width:760px;margin:auto;padding:18px}
+#status{background:#1b293d;border:1px solid #30435e;border-radius:12px;padding:13px;margin-bottom:14px;color:#cbd5e1;font-size:14px}
+button{border:0;border-radius:10px;padding:13px 17px;font-size:15px;font-weight:700;cursor:pointer}
+#start{width:100%;background:#d6ad62;color:#172033}
+#progress{height:7px;background:#26364d;border-radius:9px;margin-top:12px;overflow:hidden}
+#bar{height:100%;width:0;background:#d6ad62;transition:width .3s}
+#chat{height:55vh;min-height:300px;overflow:auto;margin:18px 0;padding:12px;background:#152235;border:1px solid #293b54;border-radius:14px}
+.msg{padding:12px 14px;margin:10px 0;border-radius:13px;white-space:pre-wrap;line-height:1.7;overflow-wrap:anywhere}
+.user{background:#344966;margin-left:25px}
+.bot{background:#26364b;margin-right:25px}
+#form{display:flex;gap:8px}
+#input{flex:1;min-width:0;background:#1b293d;color:white;border:1px solid #3a4c65;border-radius:10px;padding:13px;font-size:16px}
+#send{background:#d6ad62;color:#172033}
+#send:disabled,#start:disabled{opacity:.5}
+#clear{background:#26364b;color:#e5e7eb;margin-top:12px;width:100%}
+.note{text-align:center;color:#8292a8;font-size:12px;margin-top:16px}
 </style>
 </head>
 <body>
 <header>
- <div class="logo">RABDAN <span>AI</span> 🇦🇪</div>
- <div class="status" id="status">غير جاهز</div>
+<h1>RABDAN AI 🇦🇪</h1>
+<p>مساعدك الذكي — بهوية إماراتية</p>
 </header>
+
 <main>
- <section class="welcome">
-  <div class="flag">🇦🇪</div>
-  <h1>مرحبا بك في ربدان</h1>
-  <p>مساعدك الذكي بطابع إماراتي</p>
- </section>
- <section id="setup">
-  <div>شغّل ربدان لتحميل نموذج الذكاء الاصطناعي.</div>
-  <br>
-  <button id="start">تشغيل ربدان</button>
-  <div id="progress">Qwen3 0.6B • q4f16_1</div>
- </section>
- <div id="chat"></div>
- <div id="composer">
-  <input id="input" placeholder="اكتب رسالتك لربدان..." disabled>
-  <button id="send" disabled>إرسال</button>
- </div>
- <div style="text-align:center">
-  <button id="clear">مسح المحادثة</button>
- </div>
+<div id="status">ربدان غير مشغّل. اضغط تشغيل لتحميل الذكاء الاصطناعي.</div>
+<button id="start">تشغيل ربدان</button>
+<div id="progress"><div id="bar"></div></div>
+<div id="chat">
+<div class="msg bot">مرحبا بك، أنا ربدان. شغّلني وخلنا نبدأ 🇦🇪</div>
+</div>
+<form id="form">
+<input id="input" placeholder="اكتب رسالتك..." autocomplete="off">
+<button id="send" disabled>إرسال</button>
+</form>
+<button id="clear">مسح المحادثة</button>
+<div class="note">يعمل النموذج محلياً على جهازك عبر WebGPU.</div>
 </main>
-<div id="note">RABDAN AI • 🇦🇪</div>
+
 <script type="module">
 const MODEL = "Qwen3-0.6B-q4f16_1-MLC";
+
+const statusBox = document.getElementById("status");
 const startBtn = document.getElementById("start");
-const sendBtn = document.getElementById("send");
-const input = document.getElementById("input");
+const bar = document.getElementById("bar");
 const chat = document.getElementById("chat");
-const progress = document.getElementById("progress");
-const status = document.getElementById("status");
-const setup = document.getElementById("setup");
+const input = document.getElementById("input");
+const sendBtn = document.getElementById("send");
+const form = document.getElementById("form");
+const clearBtn = document.getElementById("clear");
+
 let engine = null;
 let busy = false;
+let history = [];
+
 const systemPrompt = `
-أنت ربدان، مساعد ذكاء اصطناعي إماراتي.
-تحدث باللهجة الإماراتية الطبيعية والواضحة.
-إذا كتب المستخدم بالإنجليزية فأجب بالإنجليزية.
-كن ودوداً ومحترماً ومختصراً عند الأسئلة البسيطة.
-لا تدّع أنك إنسان أو أنك تعرف معلومات مباشرة عن العالم.
-إذا لم تعرف الإجابة فقل ذلك بوضوح ولا تخترع معلومات.
-اسمك ربدان AI.
+أنت ربدان AI، مساعد ذكي بهوية إماراتية.
+تحدث باللهجة الإماراتية الطبيعية عندما يتحدث المستخدم بالعربية.
+كن ودوداً ومحترماً وواضحاً، وأجب مباشرة دون إطالة غير ضرورية.
+إذا تحدث المستخدم بالإنجليزية فأجبه بالإنجليزية.
+لا تدّعِ أنك تعرف معلومات لا تعرفها.
 `;
-let messages = [{role:"system",content:systemPrompt}];
-function addMessage(role,text){
- const box=document.createElement("div");
- box.className="msg "+role;
- const label=document.createElement("div");
- label.className="label";
- label.textContent=role==="user"?"أنت":"ربدان AI";
- const body=document.createElement("div");
- body.textContent=text;
- box.append(label,body);
- chat.appendChild(box);
- chat.scrollTop=chat.scrollHeight;
- return body;
+
+function addMessage(role, content) {
+  const div = document.createElement("div");
+  div.className = "msg " + (role === "user" ? "user" : "bot");
+  div.textContent = content;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return div;
 }
-function saveChat(){
- try{
-  localStorage.setItem("rabdan_chat",JSON.stringify(messages.slice(1)));
- }catch(e){}
-}
-function loadChat(){
- try{
-  const saved=JSON.parse(localStorage.getItem("rabdan_chat")||"[]");
-  saved.forEach(m=>{
-   if((m.role==="user"||m.role==="assistant")&&typeof m.content==="string"){
-    messages.push(m);
-    addMessage(m.role,m.content);
-   }
-  });
- }catch(e){}
-}
-startBtn.addEventListener("click",async()=>{
- if(engine||busy)return;
- busy=true;
- startBtn.disabled=true;
- status.textContent="جاري التحميل...";
- progress.textContent="جاري الاتصال بمحرك WebLLM...";
- try{
-  if(!navigator.gpu){
-   throw new Error("متصفحك لا يدعم WebGPU.");
+
+async function startRabdan() {
+  if (engine || busy) return;
+
+  busy = true;
+  startBtn.disabled = true;
+  statusBox.textContent = "جاري تجهيز ربدان...";
+  bar.style.width = "2%";
+
+  try {
+    if (!navigator.gpu) {
+      throw new Error("WebGPU غير مدعوم في هذا المتصفح.");
+    }
+
+    const webllm = await import(
+      "https://esm.run/@mlc-ai/web-llm@0.2.88"
+    );
+
+    const modelExists = webllm.prebuiltAppConfig.model_list.some(
+      item => item.model_id === MODEL
+    );
+
+    if (!modelExists) {
+      throw new Error("نموذج Qwen3 غير موجود في نسخة المكتبة.");
+    }
+
+    engine = await webllm.CreateMLCEngine(MODEL, {
+      initProgressCallback: (report) => {
+        statusBox.textContent = report.text || "جاري تحميل النموذج...";
+        if (typeof report.progress === "number") {
+          bar.style.width = Math.round(report.progress * 100) + "%";
+        }
+      }
+    });
+
+    bar.style.width = "100%";
+    statusBox.textContent = "ربدان جاهز للمحادثة 🇦🇪";
+    startBtn.textContent = "ربدان يعمل";
+    sendBtn.disabled = false;
+
+  } catch (error) {
+    engine = null;
+    statusBox.textContent = "خطأ: " + (error?.message || String(error));
+    startBtn.disabled = false;
+    startBtn.textContent = "إعادة المحاولة";
+    bar.style.width = "0%";
+  } finally {
+    busy = false;
   }
-  const adapter=await navigator.gpu.requestAdapter();
-  if(!adapter){
-   throw new Error("تعذر تشغيل WebGPU على الجهاز.");
-  }
-  progress.textContent="جاري تحميل مكتبة الذكاء الاصطناعي...";
-  const webllm=await import("https://esm.run/@mlc-ai/web-llm");
-  const modelExists=webllm.prebuiltAppConfig.model_list.some(
-   item=>item.model_id===MODEL
-  );
-  if(!modelExists){
-   throw new Error("لم يتم العثور على الموديل في قائمة WebLLM: "+MODEL);
-  }
-  progress.textContent="جاري تجهيز Qwen3 0.6B...";
-  engine=await webllm.CreateMLCEngine(MODEL,{
-   initProgressCallback:(report)=>{
-    progress.textContent=report.text||"جاري تحميل النموذج...";
-   }
-  });
-  status.textContent="جاهز";
-  progress.textContent="تم تشغيل ربدان بنجاح 🇦🇪";
-  setup.style.borderColor="#36d6a5";
-  startBtn.textContent="تم التشغيل";
-  input.disabled=false;
-  sendBtn.disabled=false;
-  input.focus();
- }catch(error){
-  engine=null;
-  status.textContent="تعذر التشغيل";
-  progress.textContent="خطأ: "+(error.message||String(error));
-  startBtn.disabled=false;
- }finally{
-  busy=false;
- }
-});
-async function sendMessage(){
- const text=input.value.trim();
- if(!text||!engine||busy)return;
- busy=true;
- input.value="";
- sendBtn.disabled=true;
- input.disabled=true;
- addMessage("user",text);
- messages.push({role:"user",content:text});
- const answerBox=addMessage("assistant","جاري التفكير...");
- try{
-  const result=await engine.chat.completions.create({
-   messages:messages,
-   temperature:0.7,
-   max_tokens:500
-  });
-  const answer=result.choices?.[0]?.message?.content||"ما قدرت أطلع إجابة.";
-  answerBox.textContent=answer;
-  messages.push({role:"assistant",content:answer});
-  saveChat();
- }catch(error){
-  answerBox.textContent="صار خطأ: "+(error.message||String(error));
- }
- busy=false;
- sendBtn.disabled=false;
- input.disabled=false;
- input.focus();
 }
-sendBtn.addEventListener("click",sendMessage);
-input.addEventListener("keydown",e=>{
- if(e.key==="Enter")sendMessage();
+
+startBtn.addEventListener("click", startRabdan);
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const text = input.value.trim();
+  if (!text || !engine || busy) return;
+
+  input.value = "";
+  addMessage("user", text);
+  history.push({ role: "user", content: text });
+
+  busy = true;
+  sendBtn.disabled = true;
+  const replyBox = addMessage("assistant", "ربدان يفكر...");
+
+  try {
+    const response = await engine.chat.completions.create({
+      messages: [
+        { role: "system", content: systemPrompt },
+        ...history.slice(-20)
+      ],
+      temperature: 0.7,
+      max_tokens: 500
+    });
+
+    const answer =
+      response.choices?.[0]?.message?.content || "ما قدرت أطلع رد، جرّب مرة ثانية.";
+
+    replyBox.textContent = answer;
+    history.push({ role: "assistant", content: answer });
+
+  } catch (error) {
+    replyBox.textContent = "صار خطأ: " + (error?.message || String(error));
+  } finally {
+    busy = false;
+    sendBtn.disabled = false;
+    input.focus();
+  }
 });
-document.getElementById("clear").addEventListener("click",()=>{
- messages=[{role:"system",content:systemPrompt}];
- chat.innerHTML="";
- localStorage.removeItem("rabdan_chat");
+
+clearBtn.addEventListener("click", () => {
+  history = [];
+  chat.innerHTML = "";
+  addMessage("assistant", "تم مسح المحادثة. شو حاب تسألني؟ 🇦🇪");
 });
-loadChat();
 </script>
 </body>
 </html>
