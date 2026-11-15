@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080d18">
+<title>RABDAN AI 🇦🇪</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg:#080d18;
+  --panel:#101a2b;
+  --panel2:#142239;
+  --text:#f1f5fb;
+  --muted:#8b9bb2;
+  --accent:#57e0c0;
+  --line:rgba(255,255,255,.09);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:'IBM Plex Sans Arabic',sans-serif;
+  min-height:100vh;
+}
+
+.app{
+  display:flex;
+  min-height:100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+  width:260px;
+  background:#0b1321;
+  border-left:1px solid var(--line);
+  padding:24px 18px;
+  display:flex;
+  flex-direction:column;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:38px;
+}
+
+.logo-icon{
+  width:43px;
+  height:43px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#57e0c0,#168e9c);
+  display:grid;
+  place-items:center;
+  color:#06151b;
+  font-size:22px;
+  font-weight:bold;
+}
+
+.logo h2{
+  margin:0;
+  font-size:19px;
+  letter-spacing:2px;
+}
+
+.logo small{
+  color:var(--muted);
+  font-size:10px;
+  letter-spacing:3px;
+}
+
+.new-chat{
+  border:1px solid rgba(87,224,192,.35);
+  color:var(--accent);
+  background:rgba(87,224,192,.07);
+  border-radius:12px;
+  padding:13px;
+  font-family:inherit;
+  font-size:14px;
+  cursor:pointer;
+}
+
+.side-title{
+  color:var(--muted);
+  font-size:12px;
+  margin:30px 8px 12px;
+}
+
+.side-item{
+  padding:12px;
+  border-radius:10px;
+  color:#a9b7ca;
+  font-size:13px;
+}
+
+.side-item.active{
+  background:var(--panel2);
+  color:white;
+}
+
+.sidebar-bottom{
+  margin-top:auto;
+  color:var(--muted);
+  font-size:12px;
+  border-top:1px solid var(--line);
+  padding-top:18px;
+}
+
+/* MAIN */
+
+.main{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+}
+
+.topbar{
+  height:75px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 30px;
+}
+
+.topbar-title{
+  font-size:14px;
+  color:#c7d3e3;
+}
+
+.status{
+  color:var(--accent);
+  font-size:12px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.dot{
+  width:7px;
+  height:7px;
+  background:var(--accent);
+  border-radius:50%;
+  box-shadow:0 0 12px var(--accent);
+}
+
+.language{
+  background:var(--panel);
+  border:1px solid var(--line);
+  color:white;
+  padding:8px 13px;
+  border-radius:9px;
+  font-family:inherit;
+}
+
+.content{
+  width:100%;
+  max-width:900px;
+  margin:auto;
+  padding:35px 24px;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
+.welcome{
+  text-align:center;
+  margin:auto auto 35px;
+  max-width:600px;
+}
+
+.orb{
+  width:82px;
+  height:82px;
+  border-radius:27px;
+  margin:0 auto 25px;
+  background:linear-gradient(135deg,#57e0c0,#147e91);
+  display:grid;
+  place-items:center;
+  color:#07151a;
+  font-size:37px;
+  box-shadow:0 0 55px rgba(87,224,192,.17);
+}
+
+.welcome h1{
+  font-size:35px;
+  margin:0 0 12px;
+}
+
+.welcome h1 span{
+  color:var(--accent);
+}
+
+.welcome p{
+  color:var(--muted);
+  font-size:14px;
+  line-height:2;
+  margin:0;
+}
+
+.suggestions{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  margin:30px 0;
+}
+
+.suggestion{
+  background:var(--panel);
+  border:1px solid var(--line);
+  padding:16px;
+  border-radius:14px;
+  text-align:right;
+  color:#d8e2ef;
+  font-family:inherit;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.suggestion:hover{
+  border-color:var(--accent);
+  transform:translateY(-2px);
+}
+
+.suggestion small{
+  display:block;
+  color:var(--muted);
+  margin-top:5px;
+}
+
+.chat{
+  display:none;
+  flex-direction:column;
+  gap:20px;
+  padding-bottom:25px;
+}
+
+.message{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+}
+
+.avatar{
+  min-width:34px;
+  height:34px;
+  border-radius:11px;
+  background:var(--panel2);
+  display:grid;
+  place-items:center;
+  color:var(--accent);
+  font-size:14px;
+}
+
+.message.user .avatar{
+  background:#26364b;
+  color:white;
+}
+
+.bubble{
+  background:var(--panel);
+  border:1px solid var(--line);
+  padding:13px 16px;
+  border-radius:4px 15px 15px 15px;
+  line-height:1.9;
+  font-size:14px;
+  max-width:85%;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+
+.message.user .bubble{
+  background:#172b38;
+  border-color:rgba(87,224,192,.16);
+}
+
+.input-area{
+  position:sticky;
+  bottom:0;
+  background:linear-gradient(transparent,var(--bg) 20%);
+  padding:20px 0 10px;
+}
+
+.input-box{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:#111d2e;
+  border:1px solid rgba(87,224,192,.25);
+  border-radius:17px;
+  padding:10px 12px;
+  box-shadow:0 10px 40px rgba(0,0,0,.2);
+}
+
+.input-box textarea{
+  flex:1;
+  background:transparent;
+  border:0;
+  outline:0;
+  color:white;
+  resize:none;
+  font-family:inherit;
+  font-size:14px;
+  min-height:28px;
+  max-height:120px;
+  padding:8px 5px;
+}
+
+.input-box textarea::placeholder{
+  color:#71839b;
+}
+
+.send{
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:12px;
+  background:var(--accent);
+  color:#06151b;
+  font-size:19px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.send:active{transform:scale(.94)}
+
+.disclaimer{
+  color:#64758b;
+  text-align:center;
+  font-size:10px;
+  margin-top:12px;
+}
+
+/* MOBILE */
+
+@media(max-width:700px){
+  .sidebar{display:none}
+  .topbar{padding:0 17px;height:65px}
+  .content{padding:25px 16px}
+  .welcome h1{font-size:29px}
+  .suggestions{grid-template-columns:1fr}
+  .bubble{max-width:90%}
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">ر</div>
+      <div>
+        <h2>RABDAN AI</h2>
+        <small>INTELLIGENCE UAE</small>
+      </div>
+    </div>
+
+    <button class="new-chat" onclick="newChat()">＋ محادثة جديدة</button>
+
+    <div class="side-title">مساحة العمل</div>
+    <div class="side-item active">◈ المساعد الذكي</div>
+    <div class="side-item">▧ تحليل الملفات</div>
+    <div class="side-item">✧ الإبداع والكتابة</div>
+
+    <div class="sidebar-bottom">
+      <div>🇦🇪 صنع بروح إماراتية</div>
+      <div style="margin-top:7px">RABDAN AI · 2026</div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <header class="topbar">
+      <div class="topbar-title" id="topTitle">المساعد الذكي</div>
+
+      <div style="display:flex;align-items:center;gap:17px">
+        <div class="status">
+          <span class="dot"></span>
+          <span id="statusText">النظام جاهز</span>
+        </div>
+
+        <select class="language" id="language" onchange="changeLanguage()">
+          <option value="ar">العربية</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+    </header>
+
+    <section class="content">
+
+      <div class="welcome" id="welcome">
+        <div class="orb">ر</div>
+
+        <h1 id="welcomeTitle">مرحباً بك في <span>ربدان</span></h1>
+
+        <p id="welcomeText">
+          مساعدك الذكي، بهوية إماراتية ورؤية مستقبلية.
+          ابدأ محادثتك واكتشف الإمكانيات.
+        </p>
+
+        <div class="suggestions">
+          <button class="suggestion" onclick="suggest('ساعدني أكتب رسالة احترافية')">
+            ✍️ ساعدني في الكتابة
+            <small>رسائل ونصوص احترافية</small>
+          </button>
+
+          <button class="suggestion" onclick="suggest('اشرح لي موضوعاً صعباً بطريقة سهلة')">
+            ◈ اشرح لي موضوعاً
+            <small>تعلم وفهم المعلومات</small>
+          </button>
+
+          <button class="suggestion" onclick="suggest('اعطني أفكار مشاريع مبتكرة')">
+            ✧ أفكار إبداعية
+            <small>مشاريع وحلول جديدة</small>
+          </button>
+
+          <button class="suggestion" onclick="suggest('ساعدني في تحليل هذه المعلومات')">
+            ▧ تحليل المعلومات
+            <small>تنظيم وفهم البيانات</small>
+          </button>
+        </div>
+      </div>
+
+      <div class="chat" id="chat"></div>
+
+      <div class="input-area">
+        <div class="input-box">
+          <textarea
+            id="prompt"
+            rows="1"
+            placeholder="اكتب رسالتك إلى ربدان..."
+            onkeydown="handleKey(event)"
+          ></textarea>
+
+          <button class="send" onclick="sendMessage()">➤</button>
+        </div>
+
+        <div class="disclaimer" id="disclaimer">
+          ربدان AI · مساعدك الذكي
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+</div>
+
+<script>
+let currentLanguage = "ar";
+
+const translations = {
+  ar: {
+    title:"المساعد الذكي",
+    welcome:"مرحباً بك في",
+    description:"مساعدك الذكي، بهوية إماراتية ورؤية مستقبلية. ابدأ محادثتك واكتشف الإمكانيات.",
+    placeholder:"اكتب رسالتك إلى ربدان...",
+    ready:"النظام جاهز",
+    disclaimer:"ربدان AI · مساعدك الذكي",
+    demo:"هذه نسخة تجريبية من واجهة ربدان AI. بنربطها بمحرك ذكاء اصطناعي حقيقي في المرحلة القادمة.",
+    newChat:"محادثة جديدة"
+  },
+  en: {
+    title:"AI Assistant",
+    welcome:"Welcome to",
+    description:"Your intelligent assistant, with an Emirati identity and a futuristic vision. Start a conversation.",
+    placeholder:"Message RABDAN...",
+    ready:"System ready",
+    disclaimer:"RABDAN AI · Your intelligent assistant",
+    demo:"This is a preview of the RABDAN AI interface. A real AI engine will be connected in the next development phase.",
+    newChat:"New Chat"
+  }
+};
+
+function changeLanguage(){
+  currentLanguage = document.getElementById("language").value;
+
+  const t = translations[currentLanguage];
+  const isArabic = currentLanguage === "ar";
+
+  document.documentElement.lang = currentLanguage;
+  document.documentElement.dir = isArabic ? "rtl" : "ltr";
+
+  document.getElementById("topTitle").textContent = t.title;
+  document.getElementById("welcomeTitle").innerHTML =
+    t.welcome + ' <span>RABDAN</span>';
+
+  document.getElementById("welcomeText").textContent = t.description;
+  document.getElementById("prompt").placeholder = t.placeholder;
+  document.getElementById("statusText").textContent = t.ready;
+  document.getElementById("disclaimer").textContent = t.disclaimer;
+  document.querySelector(".new-chat").textContent = "＋ " + t.newChat;
+}
+
+function suggest(text){
+  document.getElementById("prompt").value = text;
+  sendMessage();
+}
+
+function handleKey(event){
+  if(event.key === "Enter" && !event.shiftKey){
+    event.preventDefault();
+    sendMessage();
+  }
+}
+
+function addMessage(text,type){
+  const chat = document.getElementById("chat");
+
+  const message = document.createElement("div");
+  message.className = "message " + type;
+
+  const avatar = document.createElement("div");
+  avatar.className = "avatar";
+  avatar.textContent = type === "user" ? "أنت" : "ر";
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.textContent = text;
+
+  message.appendChild(avatar);
+  message.appendChild(bubble);
+  chat.appendChild(message);
+
+  window.scrollTo({
+    top:document.body.scrollHeight,
+    behavior:"smooth"
+  });
+}
+
+function sendMessage(){
+  const input = document.getElementById("prompt");
+  const text = input.value.trim();
+
+  if(!text) return;
+
+  document.getElementById("welcome").style.display = "none";
+  document.getElementById("chat").style.display = "flex";
+
+  addMessage(text,"user");
+  input.value = "";
+
+  setTimeout(()=>{
+    addMessage(translations[currentLanguage].demo,"assistant");
+  },500);
+}
+
+function newChat(){
+  document.getElementById("chat").innerHTML = "";
+  document.getElementById("chat").style.display = "none";
+  document.getElementById("welcome").style.display = "block";
+  document.getElementById("prompt").value = "";
+  window.scrollTo(0,0);
+}
+</script>
+
+</body>
+</html>
