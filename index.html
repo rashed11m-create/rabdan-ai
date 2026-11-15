@@ -2,22 +2,22 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#080d18">
 <title>RABDAN AI 🇦🇪</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#080d18;color:#f4f7fb;font-family:Arial,sans-serif}
 header{text-align:center;padding:24px;border-bottom:1px solid #263347}
-header h1{color:#57e0c0;margin:0;font-size:30px}
-header p{color:#91a2b8;font-size:13px}
+h1{color:#57e0c0;margin:0}
+header p,small{color:#91a2b8}
 main{max-width:760px;margin:auto;padding:18px}
 .panel{background:#101a2b;border:1px solid #26364b;padding:18px;border-radius:16px;margin-bottom:16px}
-#status{text-align:center;color:#57e0c0;font-size:14px;line-height:1.8}
+#status{text-align:center;color:#57e0c0;line-height:1.8}
 .progress{height:7px;background:#263347;border-radius:10px;margin:14px 0;overflow:hidden}
 #bar{height:100%;width:0;background:#57e0c0;transition:.3s}
-button{border:0;border-radius:12px;padding:13px 18px;background:#57e0c0;color:#06151b;font-weight:bold;font-size:14px;cursor:pointer}
-button:disabled{opacity:.45;cursor:not-allowed}
+button{border:0;border-radius:12px;padding:13px 18px;background:#57e0c0;color:#06151b;font-weight:bold;font-size:14px}
+button:disabled{opacity:.45}
 #start{width:100%}
 #error{color:#ff9999;font-size:12px;direction:ltr;overflow-wrap:anywhere;margin-top:12px}
 #chat{min-height:220px;max-height:48vh;overflow-y:auto}
@@ -27,7 +27,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .controls{display:flex;gap:8px;margin-top:12px}
 textarea{flex:1;min-width:0;resize:none;background:#142239;color:white;border:1px solid #35465b;border-radius:12px;padding:14px;font-size:15px}
 #clear{background:#263347;color:white;width:100%;margin-top:12px}
-small{display:block;text-align:center;color:#8192a8;margin-top:13px;line-height:1.8}
+small{display:block;text-align:center;margin-top:13px;line-height:1.8}
 </style>
 </head>
 <body>
@@ -35,7 +35,6 @@ small{display:block;text-align:center;color:#8192a8;margin-top:13px;line-height:
 <h1>🇦🇪 RABDAN AI</h1>
 <p>مساعدك الذكي بهوية إماراتية</p>
 </header>
-
 <main>
 <section class="panel">
 <div id="status">ربدان غير مشغّل حالياً</div>
@@ -43,7 +42,6 @@ small{display:block;text-align:center;color:#8192a8;margin-top:13px;line-height:
 <button id="start">تشغيل ربدان</button>
 <div id="error"></div>
 </section>
-
 <section class="panel">
 <div id="chat"></div>
 <div class="controls">
@@ -52,185 +50,153 @@ small{display:block;text-align:center;color:#8192a8;margin-top:13px;line-height:
 </div>
 <button id="clear">مسح المحادثة</button>
 </section>
-
-<small>RABDAN AI · يعمل محلياً على جهازك بعد تحميل النموذج</small>
+<small>RABDAN AI · الذكاء الاصطناعي المحلي 🇦🇪</small>
 </main>
 
 <script type="module">
-const MODEL = "Qwen2.5-0.5B-Instruct-q4f16_1-MLC";
+const MODEL="Qwen2.5-0.5B-Instruct-q4f16_1-MLC";
 
-const statusEl = document.getElementById("status");
-const errorEl = document.getElementById("error");
-const bar = document.getElementById("bar");
-const startBtn = document.getElementById("start");
-const sendBtn = document.getElementById("send");
-const input = document.getElementById("input");
-const chat = document.getElementById("chat");
+const $=id=>document.getElementById(id);
+let engine=null;
+let history=[];
 
-let engine = null;
-let history = [];
+try{
+ const saved=JSON.parse(localStorage.getItem("rabdan_history")||"[]");
+ if(Array.isArray(saved))history=saved;
+}catch{}
 
-try {
-  const saved = JSON.parse(localStorage.getItem("rabdan_history") || "[]");
-  if (Array.isArray(saved)) history = saved;
-} catch {
-  history = [];
+function showMessage(text,type){
+ const div=document.createElement("div");
+ div.className="msg "+type;
+ div.textContent=text;
+ $("chat").appendChild(div);
+ $("chat").scrollTop=$("chat").scrollHeight;
 }
 
-function showMessage(text, type) {
-  const div = document.createElement("div");
-  div.className = "msg " + type;
-  div.textContent = text;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
+function renderHistory(){
+ $("chat").innerHTML="";
+ history.forEach(m=>showMessage(m.content,m.role==="user"?"user":"bot"));
 }
-
-function renderHistory() {
-  chat.innerHTML = "";
-  history.forEach(message => {
-    showMessage(
-      message.content,
-      message.role === "user" ? "user" : "bot"
-    );
-  });
-}
-
 renderHistory();
 
-startBtn.addEventListener("click", startAI);
-sendBtn.addEventListener("click", sendMessage);
+async function startAI(){
+ $("start").disabled=true;
+ $("error").textContent="";
+ $("bar").style.width="2%";
 
-input.addEventListener("keydown", event => {
-  if (event.key === "Enter" && !event.shiftKey) {
-    event.preventDefault();
-    sendMessage();
+ try{
+  $("status").textContent="فحص دعم WebGPU...";
+
+  if(!navigator.gpu){
+   throw new Error("WebGPU غير متوفر في هذا المتصفح.");
   }
-});
 
-async function startAI() {
-  startBtn.disabled = true;
-  errorEl.textContent = "";
-  bar.style.width = "2%";
-  statusEl.textContent = "جاري فحص الجهاز...";
+  const adapter=await navigator.gpu.requestAdapter();
+  if(!adapter)throw new Error("تعذر العثور على WebGPU adapter.");
 
-  try {
-    if (!navigator.gpu) {
-      throw new Error("WebGPU is not available in this browser.");
-    }
+  $("status").textContent="تحميل مكتبة الذكاء الاصطناعي...";
 
-    const adapter = await navigator.gpu.requestAdapter();
+  const webllm=await import("https://esm.run/@mlc-ai/web-llm");
 
-    if (!adapter) {
-      throw new Error("No WebGPU adapter found.");
-    }
-
-    statusEl.textContent = "جاري تحميل محرك ربدان...";
-
-    const webllm = await import("https://esm.run/@mlc-ai/web-llm");
-
-    if (!webllm.CreateMLCEngine || !webllm.prebuiltAppConfig) {
-      throw new Error("WebLLM engine configuration is missing.");
-    }
-
-    const appConfig = {
-      ...webllm.prebuiltAppConfig,
-      cacheBackend: "indexeddb"
-    };
-
-    statusEl.textContent = "جاري تحميل نموذج الذكاء الاصطناعي...";
-    bar.style.width = "5%";
-
-    engine = await webllm.CreateMLCEngine(MODEL, {
-      appConfig,
-      initProgressCallback: progress => {
-        if (progress.text) {
-          statusEl.textContent = progress.text;
-        }
-
-        if (typeof progress.progress === "number") {
-          bar.style.width =
-            Math.round(progress.progress * 100) + "%";
-        }
-      }
-    });
-
-    bar.style.width = "100%";
-    statusEl.textContent = "ربدان جاهز للمحادثة! 🇦🇪";
-    input.disabled = false;
-    sendBtn.disabled = false;
-    startBtn.textContent = "ربدان يعمل";
-
-  } catch (error) {
-    engine = null;
-    startBtn.disabled = false;
-    startBtn.textContent = "إعادة المحاولة";
-    statusEl.textContent = "تعذر تشغيل ربدان.";
-
-    errorEl.textContent =
-      "ERROR: " + (error?.stack || error?.message || String(error));
-
-    console.error("RABDAN ERROR:", error);
+  if(typeof webllm.CreateMLCEngine!=="function"){
+   throw new Error("لم يتم العثور على CreateMLCEngine داخل المكتبة.");
   }
+
+  if(!webllm.prebuiltAppConfig){
+   throw new Error("إعدادات النماذج غير موجودة في المكتبة.");
+  }
+
+  $("status").textContent="تحميل نموذج ربدان... أول مرة قد تستغرق وقتاً.";
+  $("bar").style.width="5%";
+
+  const appConfig={
+   ...webllm.prebuiltAppConfig,
+   cacheBackend:"cache"
+  };
+
+  engine=await webllm.CreateMLCEngine(MODEL,{
+   appConfig,
+   initProgressCallback:(progress)=>{
+    if(progress.text)$("status").textContent=progress.text;
+    if(typeof progress.progress==="number"){
+     $("bar").style.width=Math.round(progress.progress*100)+"%";
+    }
+   }
+  });
+
+  $("bar").style.width="100%";
+  $("status").textContent="ربدان جاهز! 🇦🇪";
+  $("input").disabled=false;
+  $("send").disabled=false;
+  $("start").textContent="ربدان يعمل";
+
+ }catch(error){
+  engine=null;
+  $("status").textContent="تعذر تشغيل ربدان.";
+  $("start").disabled=false;
+  $("start").textContent="إعادة المحاولة";
+  $("error").textContent=
+   "ERROR: "+(error?.stack||error?.message||String(error));
+  console.error("RABDAN ERROR",error);
+ }
 }
 
-async function sendMessage() {
-  const message = input.value.trim();
+async function sendMessage(){
+ const message=$("input").value.trim();
+ if(!message||!engine)return;
 
-  if (!message || !engine) return;
+ $("input").value="";
+ $("input").disabled=true;
+ $("send").disabled=true;
 
-  input.value = "";
-  input.disabled = true;
-  sendBtn.disabled = true;
+ showMessage(message,"user");
+ history.push({role:"user",content:message});
 
-  showMessage(message, "user");
-  history.push({role:"user", content:message});
-
-  const systemPrompt = `
+ const systemPrompt=`
 أنت ربدان، مساعد ذكاء اصطناعي بهوية إماراتية.
-تحدث باللهجة الإماراتية إذا كان المستخدم يتحدث بها.
+تحدث باللهجة الإماراتية إذا تحدث المستخدم بها.
 كن ودوداً وواضحاً ومفيداً.
 أجب باللغة التي يستخدمها المستخدم.
 لا تخترع معلومات إذا لم تكن تعرف الإجابة.
 `;
 
-  try {
-    const messages = [
-      {role:"system", content:systemPrompt},
-      ...history.slice(-12)
-    ];
+ try{
+  const result=await engine.chat.completions.create({
+   messages:[
+    {role:"system",content:systemPrompt},
+    ...history.slice(-12)
+   ],
+   temperature:0.7,
+   max_tokens:350
+  });
 
-    const result = await engine.chat.completions.create({
-      messages,
-      temperature:0.7,
-      max_tokens:350
-    });
+  const answer=result.choices?.[0]?.message?.content||"ما قدرت أجهز الرد.";
+  showMessage(answer,"bot");
+  history.push({role:"assistant",content:answer});
+  localStorage.setItem("rabdan_history",JSON.stringify(history));
 
-    const answer =
-      result.choices?.[0]?.message?.content ||
-      "ما قدرت أجهز الرد.";
+ }catch(error){
+  showMessage("صار خطأ أثناء إنشاء الرد: "+error.message,"bot");
+  console.error(error);
+ }
 
-    showMessage(answer, "bot");
-    history.push({role:"assistant", content:answer});
-
-    localStorage.setItem(
-      "rabdan_history",
-      JSON.stringify(history)
-    );
-
-  } catch (error) {
-    showMessage("صار خطأ أثناء إنشاء الرد. حاول مرة ثانية.", "bot");
-    console.error("RABDAN CHAT ERROR:", error);
-  }
-
-  input.disabled = false;
-  sendBtn.disabled = false;
-  input.focus();
+ $("input").disabled=false;
+ $("send").disabled=false;
+ $("input").focus();
 }
 
-document.getElementById("clear").addEventListener("click", () => {
-  history = [];
-  localStorage.removeItem("rabdan_history");
-  chat.innerHTML = "";
+$("start").addEventListener("click",startAI);
+$("send").addEventListener("click",sendMessage);
+$("input").addEventListener("keydown",e=>{
+ if(e.key==="Enter"&&!e.shiftKey){
+  e.preventDefault();
+  sendMessage();
+ }
+});
+$("clear").addEventListener("click",()=>{
+ history=[];
+ localStorage.removeItem("rabdan_history");
+ $("chat").innerHTML="";
 });
 </script>
 </body>
